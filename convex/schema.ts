@@ -92,13 +92,13 @@ export default defineSchema({
   }),
 
   labels: defineTable({
-    userId: v.id('users'),
+    userId: v.union(v.id('users'), v.null()),
     name: v.string(),
     type: v.union(v.literal('user'), v.literal('system')),
   }),
 
   projects: defineTable({
-    userId: v.id('users'),
+    userId: v.union(v.id('users'), v.null()),
     name: v.string(),
     type: v.union(v.literal('user'), v.literal('system')),
   }),
