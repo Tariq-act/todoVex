@@ -6,16 +6,18 @@ import AddTaskDialog from '../add-tasks/add-task-dialog';
 
 export default function Task({
   data,
+  isCompleted,
   handleOnChange,
 }: {
   data: Doc<'todos'>;
+  isCompleted: boolean;
   handleOnChange: () => void;
 }) {
-  const { taskName, _id, isCompleted } = data;
+  const { taskName } = data;
 
   return (
     <div
-      key={_id}
+      key={data._id}
       className='flex items-center space-x-2 border-b-2 p-2 border-gray-100 animate-in fade-in'
     >
       <Dialog>

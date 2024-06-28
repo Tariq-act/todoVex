@@ -28,6 +28,7 @@ export default function Todos({ items }: { items: Array<Doc<'todos'>> }) {
     <Task
       key={task._id}
       data={task}
+      isCompleted={task.isCompleted}
       handleOnChange={() => handleOnChangeTodo(task)}
     />
   ));
