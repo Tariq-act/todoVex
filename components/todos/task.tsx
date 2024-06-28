@@ -1,20 +1,18 @@
 import { Checkbox } from '../ui/checkbox';
 import clsx from 'clsx';
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
-import { Id } from '@/convex/_generated/dataModel';
+import { Doc, Id } from '@/convex/_generated/dataModel';
 import AddTaskDialog from '../add-tasks/add-task-dialog';
 
 export default function Task({
-  taskName,
-  _id,
-  isCompleted,
+  data,
   handleOnChange,
 }: {
-  taskName: string;
-  _id: Id<'todos'>;
-  isCompleted: boolean;
+  data: Doc<'todos'>;
   handleOnChange: () => void;
 }) {
+  const { taskName, _id, isCompleted } = data;
+
   return (
     <div
       key={_id}
@@ -27,7 +25,7 @@ export default function Task({
               id='todo'
               className={clsx(
                 'w-5 h-5 rounded-xl',
-                isCompleted &&
+                data.isCompleted &&
                   'data-[state=checked]:bg-gray-300 border-gray-300'
               )}
               checked={isCompleted}
@@ -46,7 +44,7 @@ export default function Task({
               </div>
             </DialogTrigger>
           </div>
-          <AddTaskDialog taskName={taskName} />
+          <AddTaskDialog data={data} />
         </div>
       </Dialog>
     </div>

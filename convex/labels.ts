@@ -7,3 +7,15 @@ export const getLabels = query({
     return await ctx.db.query('labels').collect();
   },
 });
+
+export const getLabelByLabelId = query({
+  args: { labelId: v.id('labels') },
+  handler: async (ctx, { labelId }) => {
+    const label = await ctx.db
+      .query('labels')
+      .filter((q) => q.eq(q.field('_id'), labelId))
+      .collect();
+
+    return label?.[0] || null;
+  },
+});
