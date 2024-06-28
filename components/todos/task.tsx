@@ -1,7 +1,8 @@
 import { Checkbox } from '../ui/checkbox';
 import clsx from 'clsx';
-import { Dialog } from '../ui/dialog';
-import { DialogTrigger } from '@radix-ui/react-dialog';
+import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import { Id } from '@/convex/_generated/dataModel';
+import AddTaskDialog from '../add-tasks/add-task-dialog';
 
 export default function Task({
   taskName,
@@ -10,7 +11,7 @@ export default function Task({
   handleOnChange,
 }: {
   taskName: string;
-  _id: string;
+  _id: Id<'todos'>;
   isCompleted: boolean;
   handleOnChange: () => void;
 }) {
@@ -45,6 +46,7 @@ export default function Task({
               </div>
             </DialogTrigger>
           </div>
+          <AddTaskDialog taskName={taskName} />
         </div>
       </Dialog>
     </div>
