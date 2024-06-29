@@ -1,6 +1,5 @@
-import { Id } from './_generated/dataModel';
-import { query, mutation } from './_generated/server';
 import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
 import { handleUserId } from './auth';
 
 export const get = query({
@@ -86,6 +85,7 @@ export const unCheckATodo = mutation({
     return newTaskId;
   },
 });
+
 export const createATodo = mutation({
   args: {
     taskName: v.string(),
@@ -119,7 +119,7 @@ export const createATodo = mutation({
     } catch (error) {
       console.log('Error occurred during createdATodo mutation', error);
 
-      return '';
+      return null;
     }
   },
 });

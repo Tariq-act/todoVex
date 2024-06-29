@@ -9,7 +9,7 @@ export default function Task({
   isCompleted,
   handleOnChange,
 }: {
-  data: Doc<'todos'>;
+  data: Doc<'todos'> | Doc<'subTodos'>;
   isCompleted: boolean;
   handleOnChange: () => void;
 }) {

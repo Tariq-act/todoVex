@@ -41,26 +41,39 @@ const FormSchema = z.object({
   }),
   description: z.string().optional(),
   dueDate: z.date({ required_error: 'A due date is required' }),
-  priority: z.number().min(1, { message: 'Please select a priority' }),
+  priority: z.string().min(1, { message: 'Please select a priority' }),
   projectId: z.string().min(1, { message: 'Please select a Project' }),
   labelId: z.string().min(1, { message: 'Please select a Label' }),
 });
 
-const defaultValues = {
-  taskName: '',
-  description: '',
-  priority: 1,
-  dueDate: new Date(),
-  projectId: ('k17e1wz01cv29vx25v2q30yy5s6vs2v6' as Id<'projects'>) || '',
-  labelId: ('jx7bsfnf8b758eqk5f1yxsk3k96vrsrw' as Id<'labels'>) || '',
-};
+export default function AddTaskInline({
+  onClick,
+  parentTask,
+}: {
+  onClick: () => void;
+  parentTask?: Doc<'todos'>;
+}) {
+  const projectId = parentTask?.projectId || 'k17e1wz01cv29vx25v2q30yy5s6vs2v6';
+  const labelId = parentTask?.labelId || 'jx7bsfnf8b758eqk5f1yxsk3k96vrsrw';
+  const priority = parentTask?.priority?.toString() || '1';
+  const parentId = parentTask?._id;
 
-export default function AddTaskInline({ onClick }: { onClick: () => void }) {
   const { toast } = useToast();
   const projects = useQuery(api.projects.getProjects) ?? [];
   const labels = useQuery(api.labels.getLabels) ?? [];
 
   const createATodoMutation = useMutation(api.todos.createATodo);
+  const createATodoSubMutation = useMutation(api.subTodos.createASubTodo);
+
+  const defaultValues = {
+    taskName: '',
+    description: '',
+    priority: priority || '1',
+    dueDate: new Date(),
+    projectId:
+      projectId || ('k17e1wz01cv29vx25v2q30yy5s6vs2v6' as Id<'projects'>),
+    labelId: labelId || ('jx7bsfnf8b758eqk5f1yxsk3k96vrsrw' as Id<'labels'>),
+  };
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -71,18 +84,36 @@ export default function AddTaskInline({ onClick }: { onClick: () => void }) {
     const { taskName, description, priority, dueDate, projectId, labelId } =
       data;
     if (projectId) {
-      const mutationId = createATodoMutation({
-        taskName,
-        description,
-        priority,
-        dueDate: moment(dueDate).valueOf(),
-        projectId: projectId as Id<'projects'>,
-        labelId: labelId as Id<'labels'>,
-      });
+      if (parentId) {
+        // TODO: subTodos
+        const mutationId = createATodoSubMutation({
+          parentId,
+          taskName,
+          description,
+          priority: parseInt(priority),
+          dueDate: moment(dueDate).valueOf(),
+          projectId: projectId as Id<'projects'>,
+          labelId: labelId as Id<'labels'>,
+        });
 
-      if (mutationId !== undefined) {
-        toast({ title: '🦄 Created a task!', duration: 3000 });
-        form.reset({ ...defaultValues });
+        if (mutationId !== undefined) {
+          toast({ title: '🦄 Created a task!', duration: 3000 });
+          form.reset({ ...defaultValues });
+        }
+      } else {
+        const mutationId = createATodoMutation({
+          taskName,
+          description,
+          priority: parseInt(priority),
+          dueDate: moment(dueDate).valueOf(),
+          projectId: projectId as Id<'projects'>,
+          labelId: labelId as Id<'labels'>,
+        });
+
+        if (mutationId !== undefined) {
+          toast({ title: '🦄 Created a task!', duration: 3000 });
+          form.reset({ ...defaultValues });
+        }
       }
     }
   }
@@ -178,7 +209,10 @@ export default function AddTaskInline({ onClick }: { onClick: () => void }) {
               name='priority'
               render={({ field }) => (
                 <FormItem>
-                  <Select onValueChange={field.onChange} defaultValue={'1'}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={priority.toString()}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder='Select a Priority' />
@@ -205,7 +239,7 @@ export default function AddTaskInline({ onClick }: { onClick: () => void }) {
                 <FormItem>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    defaultValue={labelId || field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -233,7 +267,7 @@ export default function AddTaskInline({ onClick }: { onClick: () => void }) {
               <FormItem>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  defaultValue={projectId || field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
