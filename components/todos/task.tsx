@@ -46,7 +46,7 @@ export default function Task({
               </div>
             </DialogTrigger>
           </div>
-          <AddTaskDialog data={data} />
+          {!data.parentId && <AddTaskDialog data={data} />}
         </div>
       </Dialog>
     </div>

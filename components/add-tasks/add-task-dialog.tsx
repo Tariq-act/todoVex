@@ -64,7 +64,7 @@ const AddTaskDialog = ({ data }: { data: Doc<'todos'> }) => {
 
   return (
     <DialogContent className='max-w-4xl lg:h-4/6 flex flex-col md:flex-row lg:justify-between text-right'>
-      <DialogHeader>
+      <DialogHeader className='w-full'>
         <DialogTitle>{taskName}</DialogTitle>
         <DialogDescription>
           <p className='my-2 capitalize'>{description}</p>
@@ -109,7 +109,7 @@ const AddTaskDialog = ({ data }: { data: Doc<'todos'> }) => {
           </div>
         </DialogDescription>
       </DialogHeader>
-      <div className='flex flex-col gap-2 bg-gray-100 lg:w-1/2'>
+      <div className='flex flex-col gap-2 bg-gray-100 md:w-1/2'>
         {todoDetails.map(({ labelName, value, icon }, idx) => (
           <div
             key={`${value}-${value}`}
