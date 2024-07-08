@@ -1,60 +1,108 @@
 "use client";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { primaryNavItems } from "@/utils";
-import UserProfile from "./user-profile";
-import { usePathname } from "next/navigation";
+import { api } from "@/convex/_generated/api";
+import { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
+import { primaryNavItems } from "@/utils";
+import { DialogTrigger } from "@radix-ui/react-dialog";
+import { useQuery } from "convex/react";
+import { Hash, PlusIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Dialog } from "../ui/dialog";
+import UserProfile from "./user-profile";
+
+interface MyListTitleType {
+  [key: string]: string;
+}
 
 export default function SideBar() {
   const pathName = usePathname();
+
+  const projectList = useQuery(api.projects.getProjects) ?? [];
+
+  const LIST_OF_TITLE_IDS: MyListTitleType = {
+    primary: "",
+    projects: "My Projects",
+  };
+
+  const [navItems, setNavItems] = useState<
+    {
+      id?: string;
+      name: string;
+      link: string;
+      icon: JSX.Element;
+    }[]
+  >([...primaryNavItems]);
+
+  const renderItems = (projectList: Array<Doc<"projects">>) => {
+    return projectList.map(({ name, _id }, idx) => {
+      return {
+        ...(idx === 0 && { id: "projects" }),
+        name: name,
+        link: `/loggedin/projects/${_id.toString()}`,
+        icon: <Hash className='w-4 h-4' />,
+      };
+    });
+  };
+
+  useEffect(() => {
+    if (projectList) {
+      const projectItems = renderItems(projectList);
+      const items = [...primaryNavItems, ...projectItems];
+      setNavItems(items);
+    }
+  }, [projectList]);
+
   return (
     <div className='hidden border-r bg-muted/40 md:block'>
       <div className='flex h-full max-h-screen flex-col gap-2'>
-        <div className='flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6'>
+        <div className='flex h-14 justify-between border-b p-1 lg:h-[60px] lg:px-2'>
           <UserProfile />
         </div>
         <div className='flex-1'>
-          <nav className='grid items-start px-2 text-sm font-medium lg:px-4'>
-            {primaryNavItems.map(({ name, icon, link }, idx) => (
-              <Link
-                key={idx}
-                href={link}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                  pathName === link
-                    ? "active rounded-lg bg-primary/10 text-primary transition-all hover:text-primary"
-                    : "text-foreground"
+          <nav className='grid items-start px-1 text-sm font-medium lg:px-4'>
+            {navItems.map(({ name, icon, link, id }, idx) => (
+              <div key={idx}>
+                {id && (
+                  <div
+                    className={cn(
+                      "flex items-center mt-6 mb-2",
+                      id === "filters" && "my-0"
+                    )}
+                  >
+                    <p className='flex flex-1 text-base px-2'>
+                      {LIST_OF_TITLE_IDS[id]}
+                    </p>
+                    {LIST_OF_TITLE_IDS[id] === "My Projects" && (
+                      <Dialog>
+                        <DialogTrigger id='closeDialog'>
+                          <PlusIcon
+                            className='h-5 w-5'
+                            aria-label='Add a Project'
+                          />
+                        </DialogTrigger>
+                        {/* <AddProjectDialog /> */}
+                      </Dialog>
+                    )}
+                  </div>
                 )}
-              >
-                {icon} {name}
-              </Link>
+                <Link
+                  key={idx}
+                  href={link}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                    pathName === link
+                      ? "active rounded-lg bg-primary/10 text-primary transition-all hover:text-primary"
+                      : "text-foreground"
+                  )}
+                >
+                  {icon} {name}
+                </Link>
+              </div>
             ))}
           </nav>
-        </div>
-        <div className='mt-auto p-4'>
-          <Card x-chunk='dashboard-02-chunk-0'>
-            <CardHeader className='p-2 pt-0 md:p-4'>
-              <CardTitle>Upgrade to Pro</CardTitle>
-              <CardDescription>
-                Unlock all features and get unlimited access to our support
-                team.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='p-2 pt-0 md:p-4 md:pt-0'>
-              <Button size='sm' className='w-full'>
-                Upgrade
-              </Button>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
