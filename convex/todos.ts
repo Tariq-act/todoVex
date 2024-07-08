@@ -1,7 +1,7 @@
-import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
-import { handleUserId } from './auth';
-import moment from 'moment';
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { handleUserId } from "./auth";
+import moment from "moment";
 
 export const get = query({
   args: {},
@@ -10,8 +10,8 @@ export const get = query({
 
     if (userId) {
       return await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
         .collect();
     }
 
@@ -20,16 +20,33 @@ export const get = query({
 });
 
 export const getCompletedTodosByProjectId = query({
-  args: { projectId: v.id('projects') },
+  args: { projectId: v.id("projects") },
   handler: async (ctx, { projectId }) => {
     const userId = await handleUserId(ctx);
 
     if (userId) {
       return await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.eq(q.field('projectId'), projectId))
-        .filter((q) => q.eq(q.field('isCompleted'), true))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("projectId"), projectId))
+        .filter((q) => q.eq(q.field("isCompleted"), true))
+        .collect();
+    }
+
+    return [];
+  },
+});
+
+export const getTodosByProjectId = query({
+  args: { projectId: v.id("projects") },
+  handler: async (ctx, { projectId }) => {
+    const userId = await handleUserId(ctx);
+
+    if (userId) {
+      return await ctx.db
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("projectId"), projectId))
         .collect();
     }
 
@@ -38,16 +55,16 @@ export const getCompletedTodosByProjectId = query({
 });
 
 export const getInCompleteTodosByProjectId = query({
-  args: { projectId: v.id('projects') },
+  args: { projectId: v.id("projects") },
   handler: async (ctx, { projectId }) => {
     const userId = await handleUserId(ctx);
 
     if (userId) {
       return await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.eq(q.field('projectId'), projectId))
-        .filter((q) => q.eq(q.field('isCompleted'), false))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("projectId"), projectId))
+        .filter((q) => q.eq(q.field("isCompleted"), false))
         .collect();
     }
 
@@ -56,16 +73,16 @@ export const getInCompleteTodosByProjectId = query({
 });
 
 export const getTodosTotalByProjectId = query({
-  args: { projectId: v.id('projects') },
+  args: { projectId: v.id("projects") },
   handler: async (ctx, { projectId }) => {
     const userId = await handleUserId(ctx);
 
     if (userId) {
       const todos = await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.eq(q.field('projectId'), projectId))
-        .filter((q) => q.eq(q.field('isCompleted'), true))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("projectId"), projectId))
+        .filter((q) => q.eq(q.field("isCompleted"), true))
         .collect();
 
       return todos.length || 0;
@@ -81,16 +98,16 @@ export const todayTodos = query({
     const userId = await handleUserId(ctx);
 
     if (userId) {
-      const todayStart = moment().startOf('day');
-      const todayEnd = moment().endOf('day');
+      const todayStart = moment().startOf("day");
+      const todayEnd = moment().endOf("day");
 
       return await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
         .filter(
           (q) =>
-            q.gte(q.field('dueDate'), todayStart.valueOf()) &&
-            q.lte(todayEnd.valueOf(), q.field('dueDate'))
+            q.gte(q.field("dueDate"), todayStart.valueOf()) &&
+            q.lte(todayEnd.valueOf(), q.field("dueDate"))
         )
         .collect();
     }
@@ -108,9 +125,9 @@ export const overdueTodos = query({
       todayStart.setHours(0, 0, 0, 0);
 
       return await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.lt(q.field('dueDate'), todayStart.getTime()))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.lt(q.field("dueDate"), todayStart.getTime()))
         .collect();
     }
     return [];
@@ -124,9 +141,9 @@ export const completedTodos = query({
 
     if (userId) {
       return await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.eq(q.field('isCompleted'), true))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("isCompleted"), true))
         .collect();
     }
 
@@ -141,9 +158,9 @@ export const inCompletedTodos = query({
 
     if (userId) {
       return await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.eq(q.field('isCompleted'), false))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("isCompleted"), false))
         .collect();
     }
 
@@ -158,9 +175,9 @@ export const totalTodos = query({
 
     if (userId) {
       const todos = await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.eq(q.field('isCompleted'), true))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("isCompleted"), true))
         .collect();
 
       return todos.length || 0;
@@ -170,7 +187,7 @@ export const totalTodos = query({
 });
 
 export const checkATodo = mutation({
-  args: { taskId: v.id('todos') },
+  args: { taskId: v.id("todos") },
   handler: async (ctx, { taskId }) => {
     const newTaskId = await ctx.db.patch(taskId, { isCompleted: true });
     return newTaskId;
@@ -178,7 +195,7 @@ export const checkATodo = mutation({
 });
 
 export const unCheckATodo = mutation({
-  args: { taskId: v.id('todos') },
+  args: { taskId: v.id("todos") },
   handler: async (ctx, { taskId }) => {
     const newTaskId = await ctx.db.patch(taskId, { isCompleted: false });
     return newTaskId;
@@ -191,8 +208,8 @@ export const createATodo = mutation({
     description: v.optional(v.string()),
     priority: v.number(),
     dueDate: v.number(),
-    projectId: v.id('projects'),
-    labelId: v.id('labels'),
+    projectId: v.id("projects"),
+    labelId: v.id("labels"),
   },
   handler: async (
     ctx,
@@ -202,7 +219,7 @@ export const createATodo = mutation({
       const userId = await handleUserId(ctx);
 
       if (userId) {
-        const newTaskId = await ctx.db.insert('todos', {
+        const newTaskId = await ctx.db.insert("todos", {
           userId,
           taskName,
           description,
@@ -216,7 +233,7 @@ export const createATodo = mutation({
       }
       return null;
     } catch (error) {
-      console.log('Error occurred during createdATodo mutation', error);
+      console.log("Error occurred during createdATodo mutation", error);
 
       return null;
     }
@@ -230,9 +247,9 @@ export const groupTodosByDate = query({
 
     if (userId) {
       const todos = await ctx.db
-        .query('todos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.gt(q.field('dueDate'), new Date().getTime()))
+        .query("todos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.gt(q.field("dueDate"), new Date().getTime()))
         .collect();
 
       const groupTodos = todos.reduce<any>((acc, todo) => {

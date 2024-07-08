@@ -1,31 +1,31 @@
-import { Doc } from '@/convex/_generated/dataModel';
+import { Doc } from "@/convex/_generated/dataModel";
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Label } from '../ui/label';
-import { Calendar, ChevronDown, Flag, Hash, Tag } from 'lucide-react';
-import { format } from 'date-fns';
-import { useMutation, useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
-import { useEffect, useState } from 'react';
-import { Button } from '../ui/button';
-import Task from '../todos/task';
-import { AddTaskWrapper } from './add-task-button';
+} from "../ui/dialog";
+import { Label } from "../ui/label";
+import { Calendar, ChevronDown, Flag, Hash, Tag } from "lucide-react";
+import { format } from "date-fns";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import Task from "../todos/task";
+import { AddTaskWrapper } from "./add-task-button";
 format;
 
-const AddTaskDialog = ({ data }: { data: Doc<'todos'> }) => {
+const AddTaskDialog = ({ data }: { data: Doc<"todos"> }) => {
   const { taskName, description, projectId, labelId, dueDate, priority, _id } =
     data;
   const project = useQuery(api.projects.getProjectByProjectId, { projectId });
   const label = useQuery(api.labels.getLabelByLabelId, { labelId });
 
   const inCompletedSubTodosByProject =
-    useQuery(api.subTodos.inCompletedSubTodos) ?? [];
+    useQuery(api.subTodos.inCompletedSubTodos, { parentId: _id }) ?? [];
   const completedSubTodosByProject =
-    useQuery(api.subTodos.completedSubTodos) ?? [];
+    useQuery(api.subTodos.completedSubTodos, { parentId: _id }) ?? [];
 
   const checkASubTodoMutation = useMutation(api.subTodos.checkASubTodo);
   const unCheckASubTodoMutation = useMutation(api.subTodos.unCheckASubTodo);
@@ -37,23 +37,23 @@ const AddTaskDialog = ({ data }: { data: Doc<'todos'> }) => {
   useEffect(() => {
     const data = [
       {
-        labelName: 'Project',
-        value: project?.name || '',
+        labelName: "Project",
+        value: project?.name || "",
         icon: <Hash className='w-4 h-4 text-primary' />,
       },
       {
-        labelName: 'Due Date',
-        value: format(dueDate || new Date(), 'MMM dd yyyy'),
+        labelName: "Due Date",
+        value: format(dueDate || new Date(), "MMM dd yyyy"),
         icon: <Calendar className='w-4 h-4 text-primary' />,
       },
       {
-        labelName: 'Priority',
-        value: priority?.toString() || '',
+        labelName: "Priority",
+        value: priority?.toString() || "",
         icon: <Flag className='w-4 h-4 text-primary' />,
       },
       {
-        labelName: 'Label',
-        value: label?.name || '',
+        labelName: "Label",
+        value: label?.name || "",
         icon: <Tag className='w-4 h-4 text-primary' />,
       },
     ];
@@ -71,10 +71,12 @@ const AddTaskDialog = ({ data }: { data: Doc<'todos'> }) => {
           <div className='flex items-center gap-1 mt-12 border-b-2 border-gray-100 pb-2 flex-wrap sm:justify-between lg:gap-0'>
             <div className='flex gap-1'>
               <ChevronDown className='w-5 h-5 text-primary' />
-              <p className='font-bold flex text-sm text-gray-900'>Sub-tasks</p>
+              <span className='font-bold flex text-sm text-gray-900'>
+                Sub-tasks
+              </span>
             </div>
             <div>
-              <Button variant={'outline'}>Suggest Missing Task (AI) 📍</Button>
+              <Button variant={"outline"}>Suggest Missing Task (AI) 📍</Button>
             </div>
           </div>
 
@@ -118,7 +120,7 @@ const AddTaskDialog = ({ data }: { data: Doc<'todos'> }) => {
             <Label className='flex items-start'>{labelName}</Label>
             <div className='flex text-center items-center justify-start gap-2 pb-2'>
               {icon}
-              <p className='capitalize text-sm'>{value}</p>
+              <span className='capitalize text-sm'>{value}</span>
             </div>
           </div>
         ))}

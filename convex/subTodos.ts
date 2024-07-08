@@ -1,6 +1,6 @@
-import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
-import { handleUserId } from './auth';
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { handleUserId } from "./auth";
 
 export const get = query({
   args: {},
@@ -9,8 +9,8 @@ export const get = query({
 
     if (userId) {
       return await ctx.db
-        .query('subTodos')
-        .filter((q) => q.eq(q.field('userId'), userId))
+        .query("subTodos")
+        .filter((q) => q.eq(q.field("userId"), userId))
         .collect();
     }
 
@@ -19,7 +19,7 @@ export const get = query({
 });
 
 export const checkASubTodo = mutation({
-  args: { taskId: v.id('subTodos') },
+  args: { taskId: v.id("subTodos") },
   handler: async (ctx, { taskId }) => {
     const newTaskId = await ctx.db.patch(taskId, { isCompleted: true });
     return newTaskId;
@@ -27,7 +27,7 @@ export const checkASubTodo = mutation({
 });
 
 export const unCheckASubTodo = mutation({
-  args: { taskId: v.id('subTodos') },
+  args: { taskId: v.id("subTodos") },
   handler: async (ctx, { taskId }) => {
     const newTaskId = await ctx.db.patch(taskId, { isCompleted: false });
     return newTaskId;
@@ -40,9 +40,9 @@ export const createASubTodo = mutation({
     description: v.optional(v.string()),
     priority: v.number(),
     dueDate: v.number(),
-    projectId: v.id('projects'),
-    labelId: v.id('labels'),
-    parentId: v.id('todos'),
+    projectId: v.id("projects"),
+    labelId: v.id("labels"),
+    parentId: v.id("todos"),
   },
   handler: async (
     ctx,
@@ -52,7 +52,7 @@ export const createASubTodo = mutation({
       const userId = await handleUserId(ctx);
 
       if (userId) {
-        const newTaskId = await ctx.db.insert('subTodos', {
+        const newTaskId = await ctx.db.insert("subTodos", {
           userId,
           parentId,
           taskName,
@@ -67,7 +67,7 @@ export const createASubTodo = mutation({
       }
       return null;
     } catch (error) {
-      console.log('Error occurred during createdASubTodo mutation', error);
+      console.log("Error occurred during createdASubTodo mutation", error);
 
       return null;
     }
@@ -75,15 +75,16 @@ export const createASubTodo = mutation({
 });
 
 export const completedSubTodos = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { parentId: v.id("todos") },
+  handler: async (ctx, { parentId }) => {
     const userId = await handleUserId(ctx);
 
     if (userId) {
       return await ctx.db
-        .query('subTodos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.eq(q.field('isCompleted'), true))
+        .query("subTodos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("parentId"), parentId))
+        .filter((q) => q.eq(q.field("isCompleted"), true))
         .collect();
     }
 
@@ -92,15 +93,18 @@ export const completedSubTodos = query({
 });
 
 export const inCompletedSubTodos = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    parentId: v.id("todos"),
+  },
+  handler: async (ctx, { parentId }) => {
     const userId = await handleUserId(ctx);
 
     if (userId) {
       return await ctx.db
-        .query('subTodos')
-        .filter((q) => q.eq(q.field('userId'), userId))
-        .filter((q) => q.eq(q.field('isCompleted'), false))
+        .query("subTodos")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .filter((q) => q.eq(q.field("parentId"), parentId))
+        .filter((q) => q.eq(q.field("isCompleted"), false))
         .collect();
     }
 
