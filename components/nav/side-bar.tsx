@@ -1,43 +1,21 @@
-import Link from 'next/link';
-import {
-  Bell,
-  Calendar,
-  CalendarDays,
-  CircleUser,
-  Grid2X2,
-  Home,
-  Inbox,
-  LineChart,
-  Menu,
-  Package,
-  Package2,
-  Search,
-  ShoppingCart,
-  Users,
-} from 'lucide-react';
+"use client";
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import UserProfile from './user-profile';
-import { primaryNavItems } from '@/utils';
+} from "@/components/ui/card";
+import { primaryNavItems } from "@/utils";
+import UserProfile from "./user-profile";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export default function SideBar() {
+  const pathName = usePathname();
   return (
     <div className='hidden border-r bg-muted/40 md:block'>
       <div className='flex h-full max-h-screen flex-col gap-2'>
@@ -50,7 +28,12 @@ export default function SideBar() {
               <Link
                 key={idx}
                 href={link}
-                className='flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary'
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                  pathName === link
+                    ? "active rounded-lg bg-primary/10 text-primary transition-all hover:text-primary"
+                    : "text-foreground"
+                )}
               >
                 {icon} {name}
               </Link>

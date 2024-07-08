@@ -1,4 +1,11 @@
+import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react";
+import { format } from "date-fns";
+import { Calendar, ChevronDown, Flag, Hash, Tag } from "lucide-react";
+import { useEffect, useState } from "react";
+import Task from "../todos/task";
+import { Button } from "../ui/button";
 import {
   DialogContent,
   DialogDescription,
@@ -6,14 +13,8 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Label } from "../ui/label";
-import { Calendar, ChevronDown, Flag, Hash, Tag } from "lucide-react";
-import { format } from "date-fns";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import Task from "../todos/task";
 import { AddTaskWrapper } from "./add-task-button";
+import SuggestMissingTasks from "./suggest-tasks";
 format;
 
 const AddTaskDialog = ({ data }: { data: Doc<"todos"> }) => {
@@ -75,8 +76,15 @@ const AddTaskDialog = ({ data }: { data: Doc<"todos"> }) => {
                 Sub-tasks
               </span>
             </div>
+
             <div>
-              <Button variant={"outline"}>Suggest Missing Task (AI) 📍</Button>
+              <SuggestMissingTasks
+                projectId={projectId}
+                taskName={taskName}
+                description={description}
+                parentId={_id}
+                isSubTask={true}
+              />
             </div>
           </div>
 

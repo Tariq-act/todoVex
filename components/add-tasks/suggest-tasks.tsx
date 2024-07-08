@@ -1,20 +1,32 @@
-import React, { useState } from "react";
-import { Button } from "../ui/button";
-import { Loader } from "lucide-react";
-import { useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useAction } from "convex/react";
+import { Loader } from "lucide-react";
+import { useState } from "react";
+import { Button } from "../ui/button";
 
 export default function SuggestMissingTasks({
   projectId,
+  isSubTask = false,
+  taskName = "",
+  description = "",
+  parentId,
 }: {
   projectId: Id<"projects">;
+  isSubTask?: boolean;
+  taskName?: string;
+  description?: string;
+  parentId: Id<"todos">;
 }) {
   const [isLoadingSuggestMissingTasks, setIsLoadingSuggestMissingTasks] =
     useState<boolean>(false);
 
   const suggestMissingTasks = useAction(
     api.openai.suggestMissingItemsWithAi || []
+  );
+
+  const suggestMissingSubTasks = useAction(
+    api.openai.suggestMissingSubItemsWithAi || []
   );
 
   const handleMissingTask = async () => {
@@ -28,12 +40,28 @@ export default function SuggestMissingTasks({
     }
   };
 
+  const handleMissingSubTask = async () => {
+    setIsLoadingSuggestMissingTasks(true);
+    try {
+      await suggestMissingSubTasks({
+        projectId,
+        taskName,
+        description,
+        parentId,
+      });
+    } catch (error) {
+      console.log("Error in suggestMissingTasks", error);
+    } finally {
+      setIsLoadingSuggestMissingTasks(false);
+    }
+  };
+
   return (
     <>
       <Button
         variant={"outline"}
         disabled={isLoadingSuggestMissingTasks}
-        onClick={handleMissingTask}
+        onClick={isSubTask ? handleMissingSubTask : handleMissingTask}
       >
         {isLoadingSuggestMissingTasks ? (
           <div className='flex gap-2'>
