@@ -4,6 +4,7 @@ import { useAction } from "convex/react";
 import { Loader } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { useToast } from "../ui/use-toast";
 
 export default function SuggestMissingTasks({
   projectId,
@@ -18,6 +19,7 @@ export default function SuggestMissingTasks({
   description?: string;
   parentId: Id<"todos">;
 }) {
+  const { toast } = useToast();
   const [isLoadingSuggestMissingTasks, setIsLoadingSuggestMissingTasks] =
     useState<boolean>(false);
 
@@ -35,6 +37,7 @@ export default function SuggestMissingTasks({
       await suggestMissingTasks({ projectId });
     } catch (error) {
       console.log("Error in suggestMissingTasks", error);
+      toast({ title: "❗️ Issue OpenAI API", duration: 3000 });
     } finally {
       setIsLoadingSuggestMissingTasks(false);
     }
@@ -51,6 +54,7 @@ export default function SuggestMissingTasks({
       });
     } catch (error) {
       console.log("Error in suggestMissingTasks", error);
+      toast({ title: "❗️ Issue OpenAI API", duration: 3000 });
     } finally {
       setIsLoadingSuggestMissingTasks(false);
     }

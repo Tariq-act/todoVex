@@ -10,7 +10,7 @@ import { useQuery } from "convex/react";
 import { Hash, PlusIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Dialog } from "../ui/dialog";
+import { Dialog, DialogContent } from "../ui/dialog";
 import UserProfile from "./user-profile";
 
 interface MyListTitleType {
@@ -76,15 +76,18 @@ export default function SideBar() {
                       {LIST_OF_TITLE_IDS[id]}
                     </p>
                     {LIST_OF_TITLE_IDS[id] === "My Projects" && (
-                      <Dialog>
-                        <DialogTrigger id='closeDialog'>
-                          <PlusIcon
-                            className='h-5 w-5'
-                            aria-label='Add a Project'
-                          />
-                        </DialogTrigger>
-                        {/* <AddProjectDialog /> */}
-                      </Dialog>
+                      <>
+                        <Dialog>
+                          <DialogTrigger id='closeDialog'>
+                            <PlusIcon
+                              className='h-5 w-5'
+                              aria-label='Add a Project'
+                            />
+                          </DialogTrigger>
+
+                          <DialogContent>Hii</DialogContent>
+                        </Dialog>
+                      </>
                     )}
                   </div>
                 )}
