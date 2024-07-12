@@ -74,6 +74,7 @@ export const suggestMissingItemsWithAi = action({
         const AI_LABEL_ID = "jx7fxjfzwnfhpe965dw1dmh9gx6whe8c";
         for (let todo of parsedObject.todos) {
           const { taskName, description } = todo;
+          const embedding = await getEmbeddingsWithAI(taskName);
           await ctx.runMutation(api.todos.createATodo, {
             taskName,
             description,
@@ -81,6 +82,7 @@ export const suggestMissingItemsWithAi = action({
             dueDate: new Date().getTime(),
             projectId,
             labelId: AI_LABEL_ID as Id<"labels">,
+            embedding,
           });
         }
       } else {
@@ -142,6 +144,7 @@ export const suggestMissingSubItemsWithAi = action({
 
         for (let index = 0; index < items.length; index++) {
           const { taskName, description } = items[index];
+          const embedding = await getEmbeddingsWithAI(taskName);
           await ctx.runMutation(api.subTodos.createASubTodo, {
             taskName,
             description,
@@ -150,6 +153,7 @@ export const suggestMissingSubItemsWithAi = action({
             projectId,
             parentId,
             labelId: AI_LABEL_ID as Id<"labels">,
+            embedding,
           });
         }
       } else {
@@ -160,3 +164,44 @@ export const suggestMissingSubItemsWithAi = action({
     }
   },
 });
+
+export const getEmbeddingsWithAI = async (searchText: string) => {
+  if (!apiKey) {
+    throw new Error("Gemini AI Key is not defined");
+  }
+  // https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=$GOOGLE_API_KEY
+  const req = {
+    model: "models/text-embedding-004",
+    content: {
+      parts: [
+        {
+          text: searchText,
+        },
+      ],
+    },
+  };
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${apiKey}
+`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(req),
+    }
+  );
+
+  if (!response.ok) {
+    const msg = await response.text();
+    throw new Error(`GeminiAI Error ${msg}`);
+  }
+
+  const json = await response.json();
+  const vector = json.embedding.values;
+
+  console.log(`Embedding of ${searchText} : ${vector.length} dimensions`);
+
+  return vector;
+};

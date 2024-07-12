@@ -1,20 +1,23 @@
 "use client";
 
-import { Hash, Menu, PlusIcon, Search } from "lucide-react";
+import { Hash, Menu, PlusIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 import { primaryNavItems } from "@/utils";
+import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
 import { useQuery } from "convex/react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import SearchForm from "./search-form";
 import UserProfile from "./user-profile";
-import { cn } from "@/lib/utils";
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
+
+import todovexLogo from "@/public/logo/todovex.svg";
 
 interface MyListTitleType {
   [key: string]: string;
@@ -112,17 +115,20 @@ function MobileNav() {
             </nav>
           </SheetContent>
         </Sheet>
-        <div className='w-full flex-1'>
-          <form>
-            <div className='relative'>
-              <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
-              <Input
-                type='search'
-                placeholder='Search products...'
-                className='w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3'
-              />
-            </div>
-          </form>
+        <div className='flex items-center md:justify-between w-full gap-1 md:gap-2 py-2'>
+          <div className='lg:flex-1'>
+            <Link href={"/loggedin/projects"}>
+              <p className='text-sm font-semibold text-foreground/70 w-24'>
+                / My Projects
+              </p>
+            </Link>
+          </div>
+          <div className='place-content-center w-full flex-1'>
+            <SearchForm />
+          </div>
+          <div className='place-content-center w-12 h-12 lg:w-16 lg:h-16'>
+            <Image alt='logo' src={todovexLogo} />
+          </div>
         </div>
       </header>
     </div>

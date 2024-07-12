@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Button } from '../ui/button';
+import { Button } from "../ui/button";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import {
   Form,
@@ -12,16 +12,16 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { CalendarIcon, Text } from 'lucide-react';
-import { CardFooter } from '../ui/card';
-import { Textarea } from '../ui/textarea';
-import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Calendar } from '../ui/calendar';
-import { format } from 'date-fns';
-import moment from 'moment';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { CalendarIcon, Text } from "lucide-react";
+import { CardFooter } from "../ui/card";
+import { Textarea } from "../ui/textarea";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
+import { format } from "date-fns";
+import moment from "moment";
 
 import {
   Select,
@@ -29,21 +29,21 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
-import { Doc, Id } from '@/convex/_generated/dataModel';
-import { useMutation, useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
-import { useToast } from '../ui/use-toast';
+} from "../ui/select";
+import { Doc, Id } from "@/convex/_generated/dataModel";
+import { useAction, useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useToast } from "../ui/use-toast";
 
 const FormSchema = z.object({
   taskName: z.string().min(2, {
-    message: 'Task Name must be at least 2 characters.',
+    message: "Task Name must be at least 2 characters.",
   }),
   description: z.string().optional(),
-  dueDate: z.date({ required_error: 'A due date is required' }),
-  priority: z.string().min(1, { message: 'Please select a priority' }),
-  projectId: z.string().min(1, { message: 'Please select a Project' }),
-  labelId: z.string().min(1, { message: 'Please select a Label' }),
+  dueDate: z.date({ required_error: "A due date is required" }),
+  priority: z.string().min(1, { message: "Please select a priority" }),
+  projectId: z.string().min(1, { message: "Please select a Project" }),
+  labelId: z.string().min(1, { message: "Please select a Label" }),
 });
 
 export default function AddTaskInline({
@@ -51,28 +51,30 @@ export default function AddTaskInline({
   parentTask,
 }: {
   onClick: () => void;
-  parentTask?: Doc<'todos'>;
+  parentTask?: Doc<"todos">;
 }) {
-  const projectId = parentTask?.projectId || 'k17e1wz01cv29vx25v2q30yy5s6vs2v6';
-  const labelId = parentTask?.labelId || 'jx7bsfnf8b758eqk5f1yxsk3k96vrsrw';
-  const priority = parentTask?.priority?.toString() || '1';
+  const projectId = parentTask?.projectId || "k17e1wz01cv29vx25v2q30yy5s6vs2v6";
+  const labelId = parentTask?.labelId || "jx7bsfnf8b758eqk5f1yxsk3k96vrsrw";
+  const priority = parentTask?.priority?.toString() || "1";
   const parentId = parentTask?._id;
 
   const { toast } = useToast();
   const projects = useQuery(api.projects.getProjects) ?? [];
   const labels = useQuery(api.labels.getLabels) ?? [];
 
-  const createATodoMutation = useMutation(api.todos.createATodo);
-  const createATodoSubMutation = useMutation(api.subTodos.createASubTodo);
+  const createATodoEmbedding = useAction(api.todos.createATodoAndEmbeddings);
+  const createATodoSubEmbedding = useAction(
+    api.subTodos.createSubTodoAndEmbeddings
+  );
 
   const defaultValues = {
-    taskName: '',
-    description: '',
-    priority: priority || '1',
+    taskName: "",
+    description: "",
+    priority: priority || "1",
     dueDate: new Date(),
     projectId:
-      projectId || ('k17e1wz01cv29vx25v2q30yy5s6vs2v6' as Id<'projects'>),
-    labelId: labelId || ('jx7bsfnf8b758eqk5f1yxsk3k96vrsrw' as Id<'labels'>),
+      projectId || ("k17e1wz01cv29vx25v2q30yy5s6vs2v6" as Id<"projects">),
+    labelId: labelId || ("jx7bsfnf8b758eqk5f1yxsk3k96vrsrw" as Id<"labels">),
   };
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -80,38 +82,39 @@ export default function AddTaskInline({
     defaultValues,
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
     const { taskName, description, priority, dueDate, projectId, labelId } =
       data;
     if (projectId) {
       if (parentId) {
         // TODO: subTodos
-        const mutationId = createATodoSubMutation({
+        const mutationId = createATodoSubEmbedding({
           parentId,
           taskName,
           description,
           priority: parseInt(priority),
           dueDate: moment(dueDate).valueOf(),
-          projectId: projectId as Id<'projects'>,
-          labelId: labelId as Id<'labels'>,
+          projectId: projectId as Id<"projects">,
+          labelId: labelId as Id<"labels">,
         });
 
         if (mutationId !== undefined) {
-          toast({ title: '🦄 Created a task!', duration: 3000 });
+          toast({ title: "🦄 Created a task!", duration: 3000 });
           form.reset({ ...defaultValues });
         }
       } else {
-        const mutationId = createATodoMutation({
+        // await createATodoEmbedding({ taskName: "camping" });
+        const mutationId = createATodoEmbedding({
           taskName,
           description,
           priority: parseInt(priority),
           dueDate: moment(dueDate).valueOf(),
-          projectId: projectId as Id<'projects'>,
-          labelId: labelId as Id<'labels'>,
+          projectId: projectId as Id<"projects">,
+          labelId: labelId as Id<"labels">,
         });
 
         if (mutationId !== undefined) {
-          toast({ title: '🦄 Created a task!', duration: 3000 });
+          toast({ title: "🦄 Created a task!", duration: 3000 });
           form.reset({ ...defaultValues });
         }
       }
@@ -175,14 +178,14 @@ export default function AddTaskInline({
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          variant={'outline'}
+                          variant={"outline"}
                           className={cn(
-                            'flex gap-2  w-[240px] pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
+                            "flex gap-2  w-[240px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           {field.value ? (
-                            format(field.value, 'PPP')
+                            format(field.value, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -247,7 +250,7 @@ export default function AddTaskInline({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {labels?.map((label: Doc<'labels'>, idx: number) => (
+                      {labels?.map((label: Doc<"labels">, idx: number) => (
                         <SelectItem key={idx} value={label._id}>
                           {label?.name}
                         </SelectItem>
@@ -275,7 +278,7 @@ export default function AddTaskInline({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {projects?.map((project: Doc<'projects'>, idx: number) => (
+                    {projects?.map((project: Doc<"projects">, idx: number) => (
                       <SelectItem key={idx} value={project._id}>
                         {project?.name}
                       </SelectItem>
@@ -292,7 +295,7 @@ export default function AddTaskInline({
             <div className='flex gap-3 self-end'>
               <Button
                 className='bg-gray-300/40 text-gray-950 px-6 hover:bg-gray-300'
-                variant={'outline'}
+                variant={"outline"}
                 onClick={onClick}
               >
                 Cancel

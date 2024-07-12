@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from 'convex/server';
-import { Validator, v } from 'convex/values';
+import { defineSchema, defineTable } from "convex/server";
+import { Validator, v } from "convex/values";
 
 export const userSchema = {
   email: v.string(),
@@ -9,18 +9,18 @@ export const userSchema = {
 };
 
 export const sessionSchema = {
-  userId: v.id('users'),
+  userId: v.id("users"),
   expires: v.number(),
   sessionToken: v.string(),
 };
 
 export const accountSchema = {
-  userId: v.id('users'),
+  userId: v.id("users"),
   type: v.union(
-    v.literal('email'),
-    v.literal('oidc'),
-    v.literal('oauth'),
-    v.literal('webauthn')
+    v.literal("email"),
+    v.literal("oidc"),
+    v.literal("oauth"),
+    v.literal("webauthn")
   ),
   provider: v.string(),
   providerAccountId: v.string(),
@@ -41,7 +41,7 @@ export const verificationTokenSchema = {
 
 export const authenticatorSchema = {
   credentialID: v.string(),
-  userId: v.id('users'),
+  userId: v.id("users"),
   providerAccountId: v.string(),
   credentialPublicKey: v.string(),
   counter: v.number(),
@@ -51,55 +51,65 @@ export const authenticatorSchema = {
 };
 
 const authTables = {
-  users: defineTable(userSchema).index('email', ['email']),
+  users: defineTable(userSchema).index("email", ["email"]),
   sessions: defineTable(sessionSchema)
-    .index('sessionToken', ['sessionToken'])
-    .index('userId', ['userId']),
+    .index("sessionToken", ["sessionToken"])
+    .index("userId", ["userId"]),
   accounts: defineTable(accountSchema)
-    .index('providerAndAccountId', ['provider', 'providerAccountId'])
-    .index('userId', ['userId']),
+    .index("providerAndAccountId", ["provider", "providerAccountId"])
+    .index("userId", ["userId"]),
   verificationTokens: defineTable(verificationTokenSchema).index(
-    'identifierToken',
-    ['identifier', 'token']
+    "identifierToken",
+    ["identifier", "token"]
   ),
   authenticators: defineTable(authenticatorSchema)
-    .index('userId', ['userId'])
-    .index('credentialID', ['credentialID']),
+    .index("userId", ["userId"])
+    .index("credentialID", ["credentialID"]),
 };
 
 export default defineSchema({
   ...authTables,
   todos: defineTable({
-    userId: v.id('users'),
-    projectId: v.id('projects'),
-    labelId: v.id('labels'),
+    userId: v.id("users"),
+    projectId: v.id("projects"),
+    labelId: v.id("labels"),
     taskName: v.string(),
     description: v.optional(v.string()),
     dueDate: v.number(),
     priority: v.optional(v.float64()),
     isCompleted: v.boolean(),
+    embedding: v.optional(v.array(v.float64())),
+  }).vectorIndex("by_embedding", {
+    vectorField: "embedding",
+    dimensions: 1536,
+    filterFields: ["userId"],
   }),
   subTodos: defineTable({
-    userId: v.id('users'),
-    projectId: v.id('projects'),
-    labelId: v.id('labels'),
-    parentId: v.id('todos'),
+    userId: v.id("users"),
+    projectId: v.id("projects"),
+    labelId: v.id("labels"),
+    parentId: v.id("todos"),
     taskName: v.string(),
     description: v.optional(v.string()),
     dueDate: v.number(),
     priority: v.optional(v.float64()),
     isCompleted: v.boolean(),
+    embedding: v.optional(v.array(v.float64())),
+  }).vectorIndex("by_embedding", {
+    vectorField: "embedding",
+    dimensions: 1536,
+    filterFields: ["userId"],
   }),
 
   labels: defineTable({
-    userId: v.union(v.id('users'), v.null()),
+    userId: v.union(v.id("users"), v.null()),
     name: v.string(),
-    type: v.union(v.literal('user'), v.literal('system')),
+    type: v.union(v.literal("user"), v.literal("system")),
   }),
 
   projects: defineTable({
-    userId: v.union(v.id('users'), v.null()),
+    userId: v.union(v.id("users"), v.null()),
     name: v.string(),
-    type: v.union(v.literal('user'), v.literal('system')),
+    type: v.union(v.literal("user"), v.literal("system")),
   }),
 });
