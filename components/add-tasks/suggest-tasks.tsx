@@ -17,7 +17,7 @@ export default function SuggestMissingTasks({
   isSubTask?: boolean;
   taskName?: string;
   description?: string;
-  parentId: Id<"todos">;
+  parentId?: Id<"todos">;
 }) {
   const { toast } = useToast();
   const [isLoadingSuggestMissingTasks, setIsLoadingSuggestMissingTasks] =
@@ -44,19 +44,21 @@ export default function SuggestMissingTasks({
   };
 
   const handleMissingSubTask = async () => {
-    setIsLoadingSuggestMissingTasks(true);
-    try {
-      await suggestMissingSubTasks({
-        projectId,
-        taskName,
-        description,
-        parentId,
-      });
-    } catch (error) {
-      console.log("Error in suggestMissingTasks", error);
-      toast({ title: "❗️ Issue OpenAI API", duration: 3000 });
-    } finally {
-      setIsLoadingSuggestMissingTasks(false);
+    if (parentId) {
+      setIsLoadingSuggestMissingTasks(true);
+      try {
+        await suggestMissingSubTasks({
+          projectId,
+          taskName,
+          description,
+          parentId,
+        });
+      } catch (error) {
+        console.log("Error in suggestMissingTasks", error);
+        toast({ title: "❗️ Issue OpenAI API", duration: 3000 });
+      } finally {
+        setIsLoadingSuggestMissingTasks(false);
+      }
     }
   };
 

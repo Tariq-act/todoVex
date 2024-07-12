@@ -20,6 +20,7 @@ interface MyListTitleType {
 export default function SideBar() {
   const pathName = usePathname();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const projectList = useQuery(api.projects.getProjects) ?? [];
 
   const LIST_OF_TITLE_IDS: MyListTitleType = {

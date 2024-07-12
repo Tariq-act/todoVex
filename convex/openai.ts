@@ -18,8 +18,13 @@ import {
   HarmBlockThreshold,
 } from "@google/generative-ai";
 
-const apiKey = process.env.GEMINI_AI_KEY;
-const genAI = new GoogleGenerativeAI("AIzaSyDcS3D3x4R9EBijzuWJreOoPi5swQ4jXDo");
+const apiKey = process.env.NEXT_PUBLIC_GEMINI_AI_KEY;
+
+if (!apiKey) {
+  throw new Error("API key is not defined in environment variables.");
+}
+
+const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
@@ -54,17 +59,16 @@ export const suggestMissingItemsWithAi = action({
       );
 
       const jsonString = response.response.text();
-      console.log(jsonString);
 
       if (jsonString) {
         // Remove leading and trailing markdown syntax
         const jsonContent = jsonString
           .replace(/^```json\n/, "")
-          .replace(/\n```\n[\s\S]*$/, "");
+          .replace(/\n``` \n$/, "")
+          .trim();
 
         // Parse the JSON string
         const parsedObject = JSON.parse(jsonContent);
-        console.log("aaa", parsedObject);
 
         // Example of processing parsed todos
         const AI_LABEL_ID = "jx7fxjfzwnfhpe965dw1dmh9gx6whe8c";
@@ -132,7 +136,6 @@ export const suggestMissingSubItemsWithAi = action({
 
         // Parse the JSON string
         const parsedObject = JSON.parse(jsonContent);
-        console.log(parsedObject);
 
         const AI_LABEL_ID = "jx7fxjfzwnfhpe965dw1dmh9gx6whe8c";
         const items = parsedObject.todos; // Access todos array from parsedObject
