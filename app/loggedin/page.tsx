@@ -1,6 +1,6 @@
-import MobileNav from '@/components/nav/mobile-nav';
-import SideBar from '@/components/nav/side-bar';
-import TodoList from '@/components/todos/todo-list';
+import MobileNav from "@/components/nav/mobile-nav";
+import SideBar from "@/components/nav/side-bar";
+import TodoList from "@/components/todos/todo-list";
 
 export default function Home() {
   return (

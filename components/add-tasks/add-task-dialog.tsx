@@ -64,18 +64,18 @@ const AddTaskDialog = ({ data }: { data: Doc<"todos"> }) => {
   }, [dueDate, label?.name, priority, project]);
 
   return (
-    <DialogContent className='max-w-4xl lg:h-4/6 flex flex-col md:flex-row lg:justify-between text-right'>
-      <DialogHeader className='w-full'>
+    <DialogContent className='max-w-4xl h-4/5 lg:h-4/6 flex flex-col md:flex-row lg:justify-between text-right'>
+      <DialogHeader className='w-full md:overflow-y-auto'>
         <DialogTitle>{taskName}</DialogTitle>
         <DialogDescription>
-          <p className='my-2 capitalize'>{description}</p>
+          <span className='my-2 capitalize'>{description}</span>
           <div className='flex items-center gap-1 mt-12 border-b-2 border-gray-100 pb-2 flex-wrap sm:justify-between lg:gap-0'>
-            <div className='flex gap-1'>
+            <span className='flex gap-1'>
               <ChevronDown className='w-5 h-5 text-primary' />
               <span className='font-bold flex text-sm text-gray-900'>
                 Sub-tasks
               </span>
-            </div>
+            </span>
 
             <div>
               <SuggestMissingTasks

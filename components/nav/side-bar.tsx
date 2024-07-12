@@ -5,12 +5,11 @@ import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { primaryNavItems } from "@/utils";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useQuery } from "convex/react";
-import { Hash, PlusIcon } from "lucide-react";
+import { Hash } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent } from "../ui/dialog";
+import AddProjectDialog from "../projects/add-project-dialog";
 import UserProfile from "./user-profile";
 
 interface MyListTitleType {
@@ -49,12 +48,14 @@ export default function SideBar() {
   };
 
   useEffect(() => {
-    if (projectList) {
-      const projectItems = renderItems(projectList);
-      const items = [...primaryNavItems, ...projectItems];
+    const projectItems = renderItems(projectList);
+    const items = [...primaryNavItems, ...projectItems];
+
+    // Compare the current navItems with the new items
+    if (JSON.stringify(navItems) !== JSON.stringify(items)) {
       setNavItems(items);
     }
-  }, [projectList]);
+  }, [projectList, navItems]);
 
   return (
     <div className='hidden border-r bg-muted/40 md:block'>
@@ -78,16 +79,7 @@ export default function SideBar() {
                     </p>
                     {LIST_OF_TITLE_IDS[id] === "My Projects" && (
                       <>
-                        <Dialog>
-                          <DialogTrigger id='closeDialog'>
-                            <PlusIcon
-                              className='h-5 w-5'
-                              aria-label='Add a Project'
-                            />
-                          </DialogTrigger>
-
-                          <DialogContent>Hii</DialogContent>
-                        </Dialog>
+                        <AddProjectDialog />
                       </>
                     )}
                   </div>

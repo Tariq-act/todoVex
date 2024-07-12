@@ -18,12 +18,19 @@ import SearchForm from "./search-form";
 import UserProfile from "./user-profile";
 
 import todovexLogo from "@/public/logo/todovex.svg";
+import AddProjectDialog from "../projects/add-project-dialog";
 
 interface MyListTitleType {
   [key: string]: string;
 }
 
-function MobileNav() {
+function MobileNav({
+  navTitle = "",
+  navLink = "#",
+}: {
+  navTitle?: string;
+  navLink?: string;
+}) {
   const pathName = usePathname();
 
   const projectList = useQuery(api.projects.getProjects) ?? [];
@@ -33,7 +40,14 @@ function MobileNav() {
     projects: "My Projects",
   };
 
-  const [navItems, setNavItems] = useState([...primaryNavItems]);
+  const [navItems, setNavItems] = useState<
+    {
+      id?: string;
+      name: string;
+      link: string;
+      icon: JSX.Element;
+    }[]
+  >([...primaryNavItems]);
 
   const renderItems = (projectList: Array<Doc<"projects">>) => {
     return projectList.map(({ name, _id }, idx) => {
@@ -47,12 +61,14 @@ function MobileNav() {
   };
 
   useEffect(() => {
-    if (projectList) {
-      const projectItems = renderItems(projectList);
-      const items = [...primaryNavItems, ...projectItems];
+    const projectItems = renderItems(projectList);
+    const items = [...primaryNavItems, ...projectItems];
+
+    // Compare the current navItems with the new items
+    if (JSON.stringify(navItems) !== JSON.stringify(items)) {
       setNavItems(items);
     }
-  }, [projectList]);
+  }, [projectList, navItems]);
 
   return (
     <div className='flex flex-col'>
@@ -84,17 +100,7 @@ function MobileNav() {
                         {LIST_OF_TITLE_IDS[id]}
                       </p>
                       {LIST_OF_TITLE_IDS[id] === "My Projects" && (
-                        <>
-                          <Dialog>
-                            <DialogTrigger id='closeDialog'>
-                              <PlusIcon
-                                className='h-5 w-5'
-                                aria-label='Add a Project'
-                              />
-                            </DialogTrigger>
-                            {/* <AddProjectDialog /> */}
-                          </Dialog>
-                        </>
+                        <AddProjectDialog />
                       )}
                     </div>
                   )}
@@ -117,9 +123,9 @@ function MobileNav() {
         </Sheet>
         <div className='flex items-center md:justify-between w-full gap-1 md:gap-2 py-2'>
           <div className='lg:flex-1'>
-            <Link href={"/loggedin/projects"}>
+            <Link href={navLink}>
               <p className='text-sm font-semibold text-foreground/70 w-24'>
-                / My Projects
+                {navTitle}
               </p>
             </Link>
           </div>

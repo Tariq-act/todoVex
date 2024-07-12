@@ -39,7 +39,7 @@ const FormSchema = z.object({
   taskName: z.string().min(2, {
     message: "Task Name must be at least 2 characters.",
   }),
-  description: z.string().optional(),
+  description: z.string().optional().default(""),
   dueDate: z.date({ required_error: "A due date is required" }),
   priority: z.string().min(1, { message: "Please select a priority" }),
   projectId: z.string().min(1, { message: "Please select a Project" }),
@@ -49,12 +49,18 @@ const FormSchema = z.object({
 export default function AddTaskInline({
   onClick,
   parentTask,
+  projectId: myProjectId,
 }: {
   onClick: () => void;
   parentTask?: Doc<"todos">;
+  projectId?: Id<"projects">;
 }) {
-  const projectId = parentTask?.projectId || "k17e1wz01cv29vx25v2q30yy5s6vs2v6";
-  const labelId = parentTask?.labelId || "jx7bsfnf8b758eqk5f1yxsk3k96vrsrw";
+  const projectId =
+    myProjectId ||
+    parentTask?.projectId ||
+    ("k17e1wz01cv29vx25v2q30yy5s6vs2v6" as Id<"projects">);
+  const labelId =
+    parentTask?.labelId || ("jx7bsfnf8b758eqk5f1yxsk3k96vrsrw" as Id<"labels">);
   const priority = parentTask?.priority?.toString() || "1";
   const parentId = parentTask?._id;
 
@@ -122,7 +128,6 @@ export default function AddTaskInline({
   }
   return (
     <div>
-      {JSON.stringify(form.getValues(), null, 2)}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -158,7 +163,6 @@ export default function AddTaskInline({
                     <Textarea
                       id='description'
                       placeholder='Description'
-                      required
                       className='resize-none'
                       {...field}
                     />
@@ -168,7 +172,7 @@ export default function AddTaskInline({
             )}
           />
 
-          <div className='flex gap-2'>
+          <div className='flex flex-wrap gap-2'>
             <FormField
               control={form.control}
               name='dueDate'
@@ -180,7 +184,7 @@ export default function AddTaskInline({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "flex gap-2  w-[240px] pl-3 text-left font-normal",
+                            "flex gap-2  md:w-[240px] pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground"
                           )}
                         >

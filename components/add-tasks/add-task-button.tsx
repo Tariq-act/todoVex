@@ -1,12 +1,14 @@
-import { Plus } from 'lucide-react';
-import React, { useState } from 'react';
-import AddTaskInline from './add-task-inline';
-import { Doc, Id } from '@/convex/_generated/dataModel';
+import { Plus } from "lucide-react";
+import React, { useState } from "react";
+import AddTaskInline from "./add-task-inline";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 export const AddTaskWrapper = ({
   parentTask,
+  projectId,
 }: {
-  parentTask?: Doc<'todos'>;
+  parentTask?: Doc<"todos">;
+  projectId?: Id<"projects">;
 }) => {
   const [showAdTask, setShowAddTask] = useState<boolean>(false);
 
@@ -14,11 +16,12 @@ export const AddTaskWrapper = ({
     <AddTaskInline
       onClick={() => setShowAddTask(false)}
       parentTask={parentTask}
+      projectId={projectId}
     />
   ) : (
     <AddTaskButton
       onClick={() => setShowAddTask(true)}
-      title={parentTask?._id ? 'Add sub-task' : 'Add task'}
+      title={parentTask?._id ? "Add sub-task" : "Add task"}
     />
   );
 };
