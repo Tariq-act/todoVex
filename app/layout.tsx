@@ -5,8 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 
 const defaultFont = Noto_Sans_Georgian({ subsets: ["latin"] });
 
-const ORIGIN_URL =
-  process.env.NODE_ENV === "production" ? "" : "http://localhost:3000";
+// const ORIGIN_URL =
+//   process.env.NODE_ENV === "production" ? "" : "http://localhost:3000";
 
 export const metadata: Metadata = {
   title: "Todovex.ai",
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.ico",
   },
-  metadataBase: new URL(ORIGIN_URL),
-  alternates: {
-    canonical: ORIGIN_URL,
-  },
+  // metadataBase: new URL(ORIGIN_URL),
+  // alternates: {
+  //   canonical: ORIGIN_URL,
+  // },
 };
 
 export default function RootLayout({
