@@ -34,6 +34,7 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useToast } from "../ui/use-toast";
+import { GET_STARTED_PROJECT_ID } from "@/utils";
 
 const FormSchema = z.object({
   taskName: z.string().min(2, {
@@ -78,8 +79,7 @@ export default function AddTaskInline({
     description: "",
     priority: priority || "1",
     dueDate: new Date(),
-    projectId:
-      projectId || ("k17e1wz01cv29vx25v2q30yy5s6vs2v6" as Id<"projects">),
+    projectId: projectId || (GET_STARTED_PROJECT_ID as Id<"projects">),
     labelId: labelId || ("jx7bsfnf8b758eqk5f1yxsk3k96vrsrw" as Id<"labels">),
   };
 

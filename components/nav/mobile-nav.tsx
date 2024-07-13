@@ -1,6 +1,6 @@
 "use client";
 
-import { Hash, Menu, PlusIcon } from "lucide-react";
+import { Hash, Menu } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,6 @@ import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { primaryNavItems } from "@/utils";
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
 import { useQuery } from "convex/react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -33,6 +32,7 @@ function MobileNav({
 }) {
   const pathName = usePathname();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const projectList = useQuery(api.projects.getProjects) ?? [];
 
   const LIST_OF_TITLE_IDS: MyListTitleType = {
@@ -92,15 +92,18 @@ function MobileNav({
                   {id && (
                     <div
                       className={cn(
-                        "flex items-center mt-6 mb-2",
-                        id === "filters" && "my-0"
+                        "flex items-center  mb-2",
+                        id === "filters" && "my-0",
+                        LIST_OF_TITLE_IDS[id] === "My Projects" && "mt-6"
                       )}
                     >
                       <p className='flex flex-1 text-base'>
                         {LIST_OF_TITLE_IDS[id]}
                       </p>
                       {LIST_OF_TITLE_IDS[id] === "My Projects" && (
-                        <AddProjectDialog />
+                        <>
+                          <AddProjectDialog />
+                        </>
                       )}
                     </div>
                   )}

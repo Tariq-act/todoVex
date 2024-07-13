@@ -70,20 +70,20 @@ export default function SideBar() {
                 {id && (
                   <div
                     className={cn(
-                      "flex items-center mt-6 mb-2",
-                      id === "filters" && "my-0"
+                      "flex items-center  mb-2",
+                      id === "filters" && "my-0",
+                      LIST_OF_TITLE_IDS[id] === "My Projects" && "mt-6"
                     )}
                   >
-                    <p className='flex flex-1 text-base px-2'>
+                    <p className='flex flex-1 text-base'>
                       {LIST_OF_TITLE_IDS[id]}
                     </p>
                     {LIST_OF_TITLE_IDS[id] === "My Projects" && (
-                      <>
-                        <AddProjectDialog />
-                      </>
+                      <AddProjectDialog />
                     )}
                   </div>
                 )}
+
                 <Link
                   key={idx}
                   href={link}

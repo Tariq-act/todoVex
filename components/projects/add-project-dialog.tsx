@@ -21,7 +21,7 @@ import { useToast } from "../ui/use-toast";
 export default function AddProjectDialog() {
   return (
     <Dialog>
-      <DialogTrigger id='closeDialog'>
+      <DialogTrigger asChild id='closeDialog'>
         <PlusIcon className='h-5 w-5' aria-label='Add a Project' />
       </DialogTrigger>
 
@@ -53,30 +53,32 @@ function AddProjectDialogContent() {
 
         <DialogDescription>
           <Form {...form}>
-            <form
-              className='space-y-2 border-2 p-6 border-gray-200 my-2 rounded-sm border-foreground/20'
-              onSubmit={form.handleSubmit(onSubmit)}
-            >
-              <FormField
-                control={form.control}
-                name='name'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        id='name'
-                        type='text'
-                        required
-                        placeholder='Project name'
-                        className='border-0 font-semibold text-lg'
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              ></FormField>
-              <Button className='hover:bg-blue-600 px-4 w-full'>Add</Button>
-            </form>
+            <>
+              <form
+                className='space-y-2 border-2 p-6 border-gray-200 my-2 rounded-sm border-foreground/20'
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
+                <FormField
+                  control={form.control}
+                  name='name'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          id='name'
+                          type='text'
+                          required
+                          placeholder='Project name'
+                          className='border-0 font-semibold text-lg'
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                ></FormField>
+                <Button className='hover:bg-blue-600 px-4 w-full'>Add</Button>
+              </form>
+            </>
           </Form>
         </DialogDescription>
       </DialogHeader>
