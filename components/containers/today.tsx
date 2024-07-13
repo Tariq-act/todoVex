@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { api } from '@/convex/_generated/api';
-import { useQuery } from 'convex/react';
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 
-import { Dot } from 'lucide-react';
-import moment from 'moment';
-import { AddTaskWrapper } from '../add-tasks/add-task-button';
-import Todos from '../todos/todos';
+import { Dot } from "lucide-react";
+import moment from "moment";
+import { AddTaskWrapper } from "../add-tasks/add-task-button";
+import Todos from "../todos/todos";
 
 export default function Today() {
   const todos = useQuery(api.todos.get) ?? [];
@@ -30,15 +30,15 @@ export default function Today() {
       <div className='flex flex-col gap-1 py-4'>
         <p className='font-bold text-sm'>Overdue</p>
 
-        <Todos items={overdueTodos} />
+        <Todos showDetails={true} items={overdueTodos} />
       </div>
 
       <AddTaskWrapper />
 
       <div className='flex flex-col gap-1 py-4'>
         <p className='font-bold flex text-sm items-center border-b-2 p-2 border-gray-100'>
-          {moment(new Date()).format('LL')} <Dot /> Today <Dot />{' '}
-          {moment(new Date()).format('dddd')}
+          {moment(new Date()).format("LL")} <Dot /> Today <Dot />{" "}
+          {moment(new Date()).format("dddd")}
         </p>
         <Todos items={todayTodos} />
       </div>

@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { api } from '@/convex/_generated/api';
-import { useQuery } from 'convex/react';
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 
-import { Dot } from 'lucide-react';
-import moment from 'moment';
-import { AddTaskWrapper } from '../add-tasks/add-task-button';
-import Todos from '../todos/todos';
+import { Dot } from "lucide-react";
+import moment from "moment";
+import { AddTaskWrapper } from "../add-tasks/add-task-button";
+import Todos from "../todos/todos";
 
 export default function Upcoming() {
   const groupTodosByDate = useQuery(api.todos.groupTodosByDate) ?? [];
@@ -25,7 +25,7 @@ export default function Upcoming() {
       <div className='flex flex-col gap-1 py-4'>
         <p className='font-bold text-sm'>Overdue</p>
 
-        <Todos items={overdueTodos} />
+        <Todos showDetails={true} items={overdueTodos} />
       </div>
       <div className='pb-6'>
         <AddTaskWrapper />
@@ -35,9 +35,9 @@ export default function Upcoming() {
         {Object.keys(groupTodosByDate || {}).map((dueDate) => (
           <div key={dueDate} className='mb-6'>
             <p className='font-bold flex text-sm items-center'>
-              {moment(dueDate).format('LL')}
+              {moment(dueDate).format("LL")}
               <Dot />
-              {moment(dueDate).format('dddd')}
+              {moment(dueDate).format("dddd")}
             </p>
             <ul>
               <Todos items={groupTodosByDate[dueDate]} />

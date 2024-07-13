@@ -3,6 +3,8 @@ import clsx from "clsx";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import AddTaskDialog from "../add-tasks/add-task-dialog";
+import { Calendar, GitBranch } from "lucide-react";
+import moment from "moment";
 
 function isSubTodo(
   data: Doc<"todos"> | Doc<"subTodos">
@@ -14,12 +16,14 @@ export default function Task({
   data,
   isCompleted,
   handleOnChange,
+  showDetails = false,
 }: {
   data: Doc<"todos"> | Doc<"subTodos">;
   isCompleted: boolean;
   handleOnChange: () => void;
+  showDetails?: boolean;
 }) {
-  const { taskName } = data;
+  const { taskName, dueDate } = data;
 
   return (
     <div
@@ -49,6 +53,20 @@ export default function Task({
                 >
                   {taskName}
                 </button>
+                {showDetails && (
+                  <div className='flex gap-2'>
+                    <div className='flex items-center justify-center gap-1'>
+                      <GitBranch className='h-3 w-3 text-foreground/70' />
+                      <p className='text-xs text-foreground/70'> 1</p>
+                    </div>
+                    <div className='flex items-center justify-center gap-1'>
+                      <Calendar className='h-3 w-3 text-primary' />
+                      <p className='text-xs text-primary'>
+                        {moment(dueDate).format("LL")}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </DialogTrigger>
           </div>
