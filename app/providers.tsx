@@ -12,6 +12,7 @@ function convexTokenFromSession(session: Session | null): string | null {
 
 function useAuth() {
   const { data: session, update } = useSession();
+
   const convexToken = convexTokenFromSession(session);
   return useMemo(
     () => ({
@@ -24,11 +25,14 @@ function useAuth() {
       }) => {
         if (forceRefreshToken) {
           const session = await update();
+
           return convexTokenFromSession(session);
         }
         return convexToken;
       },
     }),
+    // We only care about the user changes, and don't want to
+    // bust the memo when we fetch a new token.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(session?.user)]
   );
@@ -46,7 +50,6 @@ export default function Providers({
       <ConvexProviderWithAuth client={convex} useAuth={useAuth}>
         {children}
       </ConvexProviderWithAuth>
-      ;
     </SessionProvider>
   );
 }
